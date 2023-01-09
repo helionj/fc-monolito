@@ -1,29 +1,35 @@
+import Id from "../../../@shared/domain/value-object/id.value-object";
+import Client from "../../domain/client-entity";
 import AddClientUseCase from "./add-client.usecase";
 
-const MockRepository = () => {
+
+const MockClientRepository = () => {
   return {
     add: jest.fn(),
-    find: jest.fn(),
-  };
-};
+    find: jest.fn()
+  }
+}
 
-describe("Add Client Usecase unit test", () => {
+describe("AddClientUseCase unit tests", () => {
+
   it("should add a client", async () => {
-    const repository = MockRepository();
-    const usecase = new AddClientUseCase(repository);
 
+    const clientRepository = MockClientRepository();
+    
     const input = {
-      name: "Client 1",
-      email: "x@x.com",
-      address: "Address 1",
-    };
+      id: "1",
+      name: "Fulano de Tal",
+      email: "fulano@email.com",
+      address: "Rua tal, 77 - Cidade Alegre"
+    }
 
-    const result = await usecase.execute(input);
+    const usecase = new AddClientUseCase(clientRepository);
+    const client = await usecase.execute(input);
 
-    expect(repository.add).toHaveBeenCalled();
-    expect(result.id).toBeDefined();
-    expect(result.name).toEqual(input.name);
-    expect(result.email).toEqual(input.email);
-    expect(result.address).toEqual(input.address);
+    expect(clientRepository.add).toHaveBeenCalled();
+    expect(client.id).toBe(input.id);
+    expect(client.name).toBe(input.name);
+    expect(client.email).toBe(input.email);
+    expect(client.address).toBe(input.address);
   });
-});
+})

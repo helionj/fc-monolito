@@ -2,15 +2,15 @@ import { Sequelize } from "sequelize-typescript";
 import ProductModel from "./product.model";
 import ProductRepository from "./product.repository";
 
-describe("ProductRepository test", () => {
+describe("Product Repository unit tests", () => {
   let sequelize: Sequelize;
 
   beforeEach(async () => {
     sequelize = new Sequelize({
-      dialect: "sqlite",
-      storage: ":memory:",
-      logging: false,
-      sync: { force: true },
+    dialect: "sqlite",
+    storage: ":memory:",
+    logging: false,
+    sync: { force: true },
     });
 
     await sequelize.addModels([ProductModel]);
@@ -21,49 +21,56 @@ describe("ProductRepository test", () => {
     await sequelize.close();
   });
 
-  it("should find all products", async () => {
-    await ProductModel.create({
+  it("should return all products", async () => {
+    
+
+    ProductModel.create({
       id: "1",
       name: "Product 1",
-      description: "Description 1",
-      salesPrice: 100,
+      description: "Description Product 1",
+      salesPrice: 100.0,
     });
 
-    await ProductModel.create({
+    ProductModel.create({
       id: "2",
       name: "Product 2",
-      description: "Description 2",
-      salesPrice: 200,
+      description: "Description Product 2",
+      salesPrice: 200.0,
     });
-
+    
     const productRepository = new ProductRepository();
-    const products = await productRepository.findAll();
+    const productsDb = await productRepository.findAll()
 
-    expect(products.length).toBe(2);
-    expect(products[0].id.id).toBe("1");
-    expect(products[0].name).toBe("Product 1");
-    expect(products[0].description).toBe("Description 1");
-    expect(products[0].salesPrice).toBe(100);
-    expect(products[1].id.id).toBe("2");
-    expect(products[1].name).toBe("Product 2");
-    expect(products[1].description).toBe("Description 2");
-    expect(products[1].salesPrice).toBe(200);
+    expect(productsDb[0].id.id).toEqual("1");
+    expect(productsDb[0].name).toEqual("Product 1");
+    expect(productsDb[0].description).toEqual("Description Product 1");
+    expect(productsDb[0].salesPrice).toEqual(100);
+    expect(productsDb[1].id.id).toEqual("2");
+    expect(productsDb[1].name).toEqual("Product 2");
+    expect(productsDb[1].description).toEqual("Description Product 2");
+    expect(productsDb[1].salesPrice).toEqual(200);
+   
+
   });
-
+  
   it("should find a product", async () => {
-    await ProductModel.create({
+    const productRepository = new ProductRepository();
+   
+    ProductModel.create({
       id: "1",
       name: "Product 1",
-      description: "Description 1",
-      salesPrice: 100,
+      description: "Description Product 1",
+      salesPrice: 100.0
     });
 
-    const productRepository = new ProductRepository();
-    const product = await productRepository.find("1");
+   
 
-    expect(product.id.id).toBe("1");
-    expect(product.name).toBe("Product 1");
-    expect(product.description).toBe("Description 1");
-    expect(product.salesPrice).toBe(100);
+    const productDb = await productRepository.find("1");
+
+    expect(productDb.id.id).toEqual("1");
+    expect(productDb.name).toEqual("Product 1");
+    expect(productDb.description).toEqual("Description Product 1");
+    expect(productDb.salesPrice).toEqual(100);
+    
   });
 });

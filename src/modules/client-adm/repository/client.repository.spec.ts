@@ -1,18 +1,18 @@
 import { Sequelize } from "sequelize-typescript";
 import Id from "../../@shared/domain/value-object/id.value-object";
-import Client from "../domain/client.entity";
-import { ClientModel } from "./client.model";
+import Client from "../domain/client-entity";
+import ClientModel from "./client.model";
 import ClientRepository from "./client.repository";
 
-describe("ClientRepository test", () => {
+describe("Client Repository unit tests", () => {
   let sequelize: Sequelize;
 
   beforeEach(async () => {
     sequelize = new Sequelize({
-      dialect: "sqlite",
-      storage: ":memory:",
-      logging: false,
-      sync: { force: true },
+    dialect: "sqlite",
+    storage: ":memory:",
+    logging: false,
+    sync: { force: true },
     });
 
     await sequelize.addModels([ClientModel]);
@@ -22,47 +22,54 @@ describe("ClientRepository test", () => {
   afterEach(async () => {
     await sequelize.close();
   });
-
   it("should create a client", async () => {
-    const client = new Client({
+    
+    const props = {
       id: new Id("1"),
       name: "Client 1",
-      email: "x@x.com",
+      email: "client1@email.com",
       address: "Address 1",
-    });
+      
 
-    const repository = new ClientRepository();
-    await repository.add(client);
+    }
+    const client = new Client(props);
 
-    const clientDb = await ClientModel.findOne({ where: { id: "1" } });
+    const clientRepository = new ClientRepository();
+    clientRepository.add(client);
 
-    expect(clientDb).toBeDefined();
-    expect(clientDb.id).toBe(client.id.id);
-    expect(clientDb.name).toBe(client.name);
-    expect(clientDb.email).toBe(client.email);
-    expect(clientDb.address).toBe(client.address);
-    expect(clientDb.createdAt).toStrictEqual(client.createdAt);
-    expect(clientDb.updatedAt).toStrictEqual(client.updatedAt);
+    const clientDb = await ClientModel.findOne(
+      { where : { id: props.id.id }, }
+    );
+   
+
+    expect(props.id.id).toEqual(clientDb.id);
+    expect(props.name).toEqual(clientDb.name);
+    expect(props.email).toEqual(clientDb.email);
+    expect(props.address).toEqual(clientDb.address);
+    expect(clientDb.createdAt).toBeDefined();
+
   });
 
   it("should find a client", async () => {
-    const client = await ClientModel.create({
+    const clientRepository = new ClientRepository();
+   
+    ClientModel.create({
       id: "1",
       name: "Client 1",
-      email: "x@x.com",
+      email: "client1@email.com",
       address: "Address 1",
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: Date.now(),
+      updatedAt: Date.now()
     });
 
-    const repository = new ClientRepository();
-    const result = await repository.find(client.id);
 
-    expect(result.id.id).toEqual(client.id);
-    expect(result.name).toEqual(client.name);
-    expect(result.email).toEqual(client.email);
-    expect(result.address).toEqual(client.address);
-    expect(result.createdAt).toStrictEqual(client.createdAt);
-    expect(result.updatedAt).toStrictEqual(client.updatedAt);
+
+    const clientDb = await clientRepository.find("1");
+
+    expect(clientDb.id.id).toEqual("1");
+    expect(clientDb.name).toEqual("Client 1");
+    expect(clientDb.email).toEqual("client1@email.com");
+    expect(clientDb.address).toEqual("Address 1");
+    expect(clientDb.createdAt).toBeDefined();
   });
 });

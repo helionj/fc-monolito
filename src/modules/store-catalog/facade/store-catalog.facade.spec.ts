@@ -1,16 +1,19 @@
 import { Sequelize } from "sequelize-typescript";
-import StoreCatalogFacadeFactory from "../factory/facade.factory";
 import ProductModel from "../repository/product.model";
+import ProductRepository from "../repository/product.repository";
+import FindAllProductsUseCase from "../usecase/find-all-products/find-all-products.usecase";
+import FindProductUseCase from "../usecase/find-product/find-product-usecase";
+import StoreCatalogFacade from "./store-catalog.facade";
 
-describe("StoreCatalogFacade test", () => {
+describe("StoreCatalogFacade tests", () => {
   let sequelize: Sequelize;
 
   beforeEach(async () => {
     sequelize = new Sequelize({
-      dialect: "sqlite",
-      storage: ":memory:",
-      logging: false,
-      sync: { force: true },
+    dialect: "sqlite",
+    storage: ":memory:",
+    logging: false,
+    sync: { force: true },
     });
 
     await sequelize.addModels([ProductModel]);
@@ -21,48 +24,72 @@ describe("StoreCatalogFacade test", () => {
     await sequelize.close();
   });
 
-  it("should find a product", async () => {
-    const facade = StoreCatalogFacadeFactory.create();
+  it("should return all products", async () => {
+
+    const productRepository = new ProductRepository();
+    const findProductUseCase = new FindProductUseCase(productRepository);
+    const findAllProductsUseCase = new FindAllProductsUseCase(productRepository);
+    const storeCatalogFacade = new StoreCatalogFacade({
+      findProductUseCase: findProductUseCase,
+      findAllProductsUseCase: findAllProductsUseCase
+    });
+
     await ProductModel.create({
       id: "1",
       name: "Product 1",
-      description: "Description 1",
-      salesPrice: 100,
+      description: "Description Product 1",
+      salesPrice: 100.0,
     });
 
-    const result = await facade.find({ id: "1" });
-
-    expect(result.id).toBe("1");
-    expect(result.name).toBe("Product 1");
-    expect(result.description).toBe("Description 1");
-    expect(result.salesPrice).toBe(100);
-  });
-
-  it("should find all products", async () => {
-    const facade = StoreCatalogFacadeFactory.create();
-    await ProductModel.create({
-      id: "1",
-      name: "Product 1",
-      description: "Description 1",
-      salesPrice: 100,
-    });
     await ProductModel.create({
       id: "2",
       name: "Product 2",
-      description: "Description 2",
-      salesPrice: 200,
+      description: "Description Product 2",
+      salesPrice: 200.0,
     });
 
-    const result = await facade.findAll();
+    
+    const products = await storeCatalogFacade.findAll();
 
-    expect(result.products.length).toBe(2);
-    expect(result.products[0].id).toBe("1");
-    expect(result.products[0].name).toBe("Product 1");
-    expect(result.products[0].description).toBe("Description 1");
-    expect(result.products[0].salesPrice).toBe(100);
-    expect(result.products[1].id).toBe("2");
-    expect(result.products[1].name).toBe("Product 2");
-    expect(result.products[1].description).toBe("Description 2");
-    expect(result.products[1].salesPrice).toBe(200);
+    expect(products.products.length).toBe(2);
+    expect(products.products[0].name).toBe("Product 1");
+    expect(products.products[0].id).toBe("1");
+    expect(products.products[0].description).toBe("Description Product 1");
+    expect(products.products[0].salesPrice).toBe(100.0);
+    expect(products.products[1].name).toBe("Product 2");
+    expect(products.products[1].id).toBe("2");
+    expect(products.products[1].description).toBe("Description Product 2");
+    expect(products.products[1].salesPrice).toBe(200.0);
+  })
+
+  it("should find a product", async () => {
+    
+    const productRepository = new ProductRepository();
+    const findProductUseCase = new FindProductUseCase(productRepository);
+    const findAllProductsUseCase = new FindAllProductsUseCase(productRepository);
+    const storeCatalogFacade = new StoreCatalogFacade({
+      findProductUseCase: findProductUseCase,
+      findAllProductsUseCase: findAllProductsUseCase
+    });
+
+    await ProductModel.create({
+      id: "1",
+      name: "Product 1",
+      description: "Description Product 1",
+      salesPrice: 100.0,
+    
+    });
+
+    const input = {
+      id: "1"
+    }
+
+    const product = await storeCatalogFacade.find(input);
+
+    expect(product.id).toBe("1");
+    expect(product.name).toBe("Product 1");
+    expect(product.description).toBe("Description Product 1");
+    expect(product.salesPrice).toBe(100);
+
   });
-});
+})

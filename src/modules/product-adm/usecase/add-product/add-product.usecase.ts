@@ -4,24 +4,24 @@ import ProductGateway from "../../gateway/product.gateway";
 import { AddProductInputDto, AddProductOutputDto } from "./add-product.dto";
 
 export default class AddProductUseCase {
-  private _productRepository: ProductGateway;
 
-  constructor(_productRepository: ProductGateway) {
-    this._productRepository = _productRepository;
+  private repository: ProductGateway
+
+  constructor(repository: ProductGateway){
+    this.repository = repository;
   }
 
-  async execute(input: AddProductInputDto): Promise<AddProductOutputDto> {
+  async execute(input: AddProductInputDto): Promise<AddProductOutputDto>{
+
     const props = {
       id: new Id(input.id),
       name: input.name,
       description: input.description,
       purchasePrice: input.purchasePrice,
-      stock: input.stock,
+      stock: input.stock
     };
-
     const product = new Product(props);
-    this._productRepository.add(product);
-
+    await this.repository.add(product);
     return {
       id: product.id.id,
       name: product.name,
@@ -29,7 +29,10 @@ export default class AddProductUseCase {
       purchasePrice: product.purchasePrice,
       stock: product.stock,
       createdAt: product.createdAt,
-      updatedAt: product.updatedAt,
-    };
+      updatedAt: product.updatedAt
+
+    }
+
+
   }
 }

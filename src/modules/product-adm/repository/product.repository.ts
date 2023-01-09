@@ -1,37 +1,41 @@
 import Id from "../../@shared/domain/value-object/id.value-object";
 import Product from "../domain/product.entity";
 import ProductGateway from "../gateway/product.gateway";
-import { ProductModel } from "./product.model";
+import ProductModel from "./product.model";
 
-export default class ProductRepository implements ProductGateway {
-  async add(product: Product): Promise<void> {
-    await ProductModel.create({
-      id: product.id.id,
-      name: product.name,
-      description: product.description,
-      purchasePrice: product.purchasePrice,
-      stock: product.stock,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
-  }
+export default class ProductRepository implements ProductGateway{
   async find(id: string): Promise<Product> {
-    const product = await ProductModel.findOne({
-      where: { id },
-    });
 
-    if (!product) {
-      throw new Error(`Product with id ${id} not found`);
+    const productDb = await ProductModel.findOne({ where: { id: id },})
+    const props ={
+      id: new Id(productDb.id),
+      name: productDb.name,
+      description: productDb.description,
+      purchasePrice: productDb.purchasePrice,
+      stock: productDb.stock,
+      createdAt: productDb.createdAt,
+      updatedAt: productDb.updatedAt
+      
     }
-
-    return new Product({
-      id: new Id(product.id),
-      name: product.name,
-      description: product.description,
-      purchasePrice: product.purchasePrice,
-      stock: product.stock,
-      createdAt: product.createdAt,
-      updatedAt: product.updatedAt,
-    });
+    if(!productDb){
+      throw  new Error("Product not found");
+    }
+    return new Product(props);
   }
+
+  async add(entity: Product): Promise<void>{
+  
+    await ProductModel.create({
+      id: entity.id.id,
+      name: entity.name,
+      description: entity.description,
+      purchasePrice: entity.purchasePrice,
+      stock: entity.stock,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    });
+  
+    
+  }
+ 
 }

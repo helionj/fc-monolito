@@ -1,34 +1,31 @@
 import Id from "../../@shared/domain/value-object/id.value-object";
-import Client from "../domain/client.entity";
-import clientEntity from "../domain/client.entity";
-import ClientGateway from "../gateway/client.gateway";
-import { ClientModel } from "./client.model";
+import Client from "../domain/client-entity";
+import { ClientGateway } from "../gateway/client.gateway";
+import ClientModel from "./client.model";
 
 export default class ClientRepository implements ClientGateway {
-  async add(client: clientEntity): Promise<void> {
+ 
+  async add(client: Client): Promise<void> {
+
     await ClientModel.create({
       id: client.id.id,
       name: client.name,
       email: client.email,
       address: client.address,
       createdAt: client.createdAt,
-      updatedAt: client.updatedAt,
+      updatedAt: client.updatedAt
     });
+   
   }
-  async find(id: string): Promise<clientEntity> {
-    const client = await ClientModel.findOne({ where: { id } });
 
-    if (!client) {
-      throw new Error("Client not found");
-    }
-
+  async find(id: string): Promise<Client> {
+    
+    const result = await ClientModel.findOne( { where: { id: id}});
     return new Client({
-      id: new Id(client.id),
-      name: client.name,
-      email: client.email,
-      address: client.address,
-      createdAt: client.createdAt,
-      updatedAt: client.updatedAt,
-    });
+      id: new Id(result.id),
+      name: result.name,
+      email: result.email,
+      address: result.address
+    })
   }
 }
