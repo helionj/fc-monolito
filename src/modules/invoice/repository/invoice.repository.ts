@@ -4,7 +4,7 @@ import Product from "../domain/entity/product.entity";
 import Address from "../domain/value-objet/address";
 import { InvoiceGateway } from "../gateway/invoice.gateway";
 import InvoiceModel from "./sequelize/invoice.model";
-import ProductModel from "./sequelize/product.model";
+import InvoiceProductModel from "./sequelize/invoice-product.model";
 
 export default class InvoiceRepository implements InvoiceGateway {
 
@@ -41,7 +41,7 @@ export default class InvoiceRepository implements InvoiceGateway {
         }))
       }, 
       {
-        include: [{ model: ProductModel }]
+        include: [{ model: InvoiceProductModel }]
       });
     } catch (error) {
       console.log(error);

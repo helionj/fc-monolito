@@ -2,7 +2,7 @@ import { Sequelize } from "sequelize-typescript";
 import ClientModel from "../repository/client.model";
 import ClientRepository from "../repository/client.repository";
 import AddClientUseCase from "../usecase/add-client/add-client.usecase";
-import { FindClientUseCase } from "../usecase/find-client/find-client-usecase";
+import FindClientUseCase  from "../usecase/find-client/find-client-usecase";
 import ClientAdmFacade from "./client-adm.facade";
 
 describe("ClientAdmFacade tests", () => {
@@ -24,7 +24,7 @@ describe("ClientAdmFacade tests", () => {
     await sequelize.close();
   });
 
-  it("should create a product", async () => {
+  it("should create a client", async () => {
 
     const clientRepository = new ClientRepository();
     const addClientUseCase = new AddClientUseCase(clientRepository);
@@ -37,7 +37,13 @@ describe("ClientAdmFacade tests", () => {
       id: "1",
       name: "Client 1",
       email: "client1@email.com",
-      address: "Address 1",
+      document: "doc1",
+      street: "Main street",
+      number: "10",
+      complement: "cpl",
+      city: "City",
+      zipCode: "55000555",
+      state: "ST",
       
     }
     await clientFacade.add(input);
@@ -48,7 +54,7 @@ describe("ClientAdmFacade tests", () => {
     expect(client.id).toBe(input.id);
     expect(client.name).toBe(input.name);
     expect(client.email).toBe(input.email);
-    expect(client.address).toBe(input.address);
+    expect(client.document).toBe(input.document);
   })
 
   it("should find a client", async () => {
@@ -63,7 +69,13 @@ describe("ClientAdmFacade tests", () => {
       id: "1",
       name: "Client 1",
       email: "client1@email.com",
-      address: "Address 1",
+      document: "doc1",
+      street: "Main Street",
+      number: "10",
+      complement: "",
+      city: "City",
+      zipCode: "55000555",
+      state: "ST",
       createdAt: Date.now(),
       updatedAt: Date.now()
     });
@@ -77,7 +89,8 @@ describe("ClientAdmFacade tests", () => {
     expect(client.id).toBe("1");
     expect(client.name).toBe("Client 1");
     expect(client.email).toBe("client1@email.com")
-    expect(client.address).toBe("Address 1");
+    expect(client.document).toBe("doc1");
+    expect(client.street).toBe("Main Street")
 
   });
 })

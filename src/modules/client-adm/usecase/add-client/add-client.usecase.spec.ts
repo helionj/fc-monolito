@@ -1,6 +1,5 @@
-import Id from "../../../@shared/domain/value-object/id.value-object";
-import Client from "../../domain/client-entity";
 import AddClientUseCase from "./add-client.usecase";
+import { AddClientUseCaseInputDto } from "./add-client.usecase.dto";
 
 
 const MockClientRepository = () => {
@@ -16,12 +15,18 @@ describe("AddClientUseCase unit tests", () => {
 
     const clientRepository = MockClientRepository();
     
-    const input = {
+    const input:AddClientUseCaseInputDto = {
       id: "1",
       name: "Fulano de Tal",
       email: "fulano@email.com",
-      address: "Rua tal, 77 - Cidade Alegre"
-    }
+      document: "xyz98",
+      street: "Rua Tal",
+      number: "sn",
+      complement: "",
+      city: "Alegre",
+      zipCode: "55000555",
+      state: "ST"
+      }
 
     const usecase = new AddClientUseCase(clientRepository);
     const client = await usecase.execute(input);
@@ -30,6 +35,13 @@ describe("AddClientUseCase unit tests", () => {
     expect(client.id).toBe(input.id);
     expect(client.name).toBe(input.name);
     expect(client.email).toBe(input.email);
-    expect(client.address).toBe(input.address);
+    expect(client.document).toBe(input.document)
+    expect(client.address.street).toBe(input.street);
+    expect(client.address.number).toBe(input.number);
+    expect(client.address.complemet).toBe(input.complement);
+    expect(client.address.city).toBe(input.city);
+    expect(client.address.zipCode).toBe(input.zipCode);
+    expect(client.address.state).toBe(input.state);
+
   });
 })

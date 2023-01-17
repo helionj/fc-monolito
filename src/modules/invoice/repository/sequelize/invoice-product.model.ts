@@ -2,10 +2,10 @@ import { BelongsTo, Column, ForeignKey, Model, PrimaryKey, Table } from "sequeli
 import InvoiceModel from "./invoice.model";
 
 @Table({
-  tableName: "products",
+  tableName: "invoice-products",
   timestamps: false
 })
-export default class ProductModel extends Model {
+export default class InvoiceProductModel extends Model {
 
   @PrimaryKey
   @Column({ allowNull: false })

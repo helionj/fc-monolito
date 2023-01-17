@@ -1,6 +1,7 @@
 import { Sequelize } from "sequelize-typescript";
 import Id from "../../@shared/domain/value-object/id.value-object";
 import Client from "../domain/client-entity";
+import Address from "../domain/value-objet/address";
 import ClientModel from "./client.model";
 import ClientRepository from "./client.repository";
 
@@ -24,13 +25,21 @@ describe("Client Repository unit tests", () => {
   });
   it("should create a client", async () => {
     
+    const address = new Address({
+      street: "Street",
+      number: "10",
+      complement: "cpl",
+      city: "City",
+      zipCode: "55000555",
+      state: "ST"
+    });
+
     const props = {
       id: new Id("1"),
       name: "Client 1",
       email: "client1@email.com",
-      address: "Address 1",
-      
-
+      document: "xyz",
+      address:  address
     }
     const client = new Client(props);
 
@@ -45,7 +54,8 @@ describe("Client Repository unit tests", () => {
     expect(props.id.id).toEqual(clientDb.id);
     expect(props.name).toEqual(clientDb.name);
     expect(props.email).toEqual(clientDb.email);
-    expect(props.address).toEqual(clientDb.address);
+    expect(props.document).toEqual(clientDb.document);
+    expect(clientDb.street).toEqual("Street")
     expect(clientDb.createdAt).toBeDefined();
 
   });
@@ -57,7 +67,13 @@ describe("Client Repository unit tests", () => {
       id: "1",
       name: "Client 1",
       email: "client1@email.com",
-      address: "Address 1",
+      document: "doc1",
+      street: "Main street",
+      number: "10",
+      complement: "cpl",
+      city: "City",
+      zipCode: "55000555",
+      state: "ST",
       createdAt: Date.now(),
       updatedAt: Date.now()
     });
@@ -69,7 +85,8 @@ describe("Client Repository unit tests", () => {
     expect(clientDb.id.id).toEqual("1");
     expect(clientDb.name).toEqual("Client 1");
     expect(clientDb.email).toEqual("client1@email.com");
-    expect(clientDb.address).toEqual("Address 1");
+    expect(clientDb.document).toEqual("doc1")
+    expect(clientDb.address.street).toEqual("Main street");
     expect(clientDb.createdAt).toBeDefined();
   });
 });
